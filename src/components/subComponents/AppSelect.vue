@@ -21,7 +21,7 @@
         class="form-control"
         aria-label="Text input with select dropdown"
         v-model="defaultcall.rates[selectedCurrencyDollar]"
-        @keyup="fetchExchangeRate"
+        @keyup="fetchExchangeRateReverse"
       />
       <!-- Selezione per il Dollaro -->
       <select class="form-select" aria-label="Dropdown select" v-model="selectedCurrencyDollar" @change="fetchExchangeRate">
@@ -64,8 +64,8 @@ export default {
   },
   methods: {
     fetchExchangeRate() {
-      // Controlla se l'importo è un numero valido prima di procedere
-      if (isNaN(this.defaultcall.amount) || this.defaultcall.amount <= 0) {
+      // Controlla se l'importo è un numero valido
+      if (isNaN(this.defaultcall.amount) || this.defaultcall.amount < 0) {
         console.warn('L\'importo deve essere un numero positivo.');
         return; // Esci se l'importo non è valido
       }
@@ -79,6 +79,26 @@ export default {
         })
         .catch(error => {
           console.error('Errore durante la richiesta dei tassi di cambio:', error);
+        });
+    },
+    fetchExchangeRateReverse() {
+      // Controlla se l'importo è un numero valido
+      const reverseAmount = parseFloat(this.defaultcall.rates[this.selectedCurrencyDollar]);
+      if (isNaN(reverseAmount) || reverseAmount < 0) {
+        console.warn('L\'importo deve essere un numero positivo.');
+        return; // Esci se l'importo non è valido
+      }
+
+      // Chiamata API per ottenere il tasso di cambio con `selectedCurrencyDollar` come base
+      axios
+        .get(`https://api.frankfurter.app/latest?amount=${reverseAmount}&symbols=${this.selectedCurrencyEuro}&base=${this.selectedCurrencyDollar}`)
+        .then(response => {
+          // Aggiorna il valore del campo di input iniziale con l'importo convertito
+          this.defaultcall.amount = response.data.rates[this.selectedCurrencyEuro];
+          console.log('Tasso di cambio inverso ricevuto:', response.data.rates);
+        })
+        .catch(error => {
+          console.error('Errore durante la richiesta dei tassi di cambio inverso:', error);
         });
     },
   },
