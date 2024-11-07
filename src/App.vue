@@ -10,7 +10,7 @@ export default {
 </script>
 
 <template>
- <div>
+ <div class="">
   <AppMain/>
  </div>
 </template>
