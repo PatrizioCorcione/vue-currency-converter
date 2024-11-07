@@ -8,5 +8,8 @@
     color: #057eda;
   }
   .input-bg{
-    background-color: #59b7ff;
+    background-color: #9cd4ff;
+  }
+  .input-bg:focus {
+    background-color: #9cd4ff; /* Mantieni lo stesso colore di sfondo in focus */
   }
